@@ -19,3 +19,7 @@ body {
 .App_content {
   margin: 0 10px;
 }
+
+.error {
+  color: red;
+}

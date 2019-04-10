@@ -1,6 +1,6 @@
 import React from "react";
 
-const ListOfQuotes = ({ quotes, onHover, currentIndex }) => {
+const ListOfQuotes = ({ quotes }) => {
   // JSX
   return (
     <div>
@@ -10,16 +10,15 @@ const ListOfQuotes = ({ quotes, onHover, currentIndex }) => {
           style={Styles.quoteContainer}
           className="quote-container"
           key={index}
-          onMouseOver={() => onHover(index)}
         >
           <p className="quote">{quote.joke}</p>
-          {index === currentIndex ? <a
-              class="twitter-share-button"
+          <a
+              className="twitter-share-button"
               target="_blanl"
               href={`https://twitter.com/intent/tweet?text=${quote.joke}`}
             >
               Tweet quote
-            </a> : null}
+            </a>
         </div>
       ))}
     </div>

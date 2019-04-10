@@ -1,7 +1,5 @@
 import React from "react";
 import ListOfQuotes from "./components/ListOfQuotes";
-import QuoteCharacter from "./components/QuoteCharacter";
-import QuoteSelection from "./components/QuoteSelection";
 
 import "./App.css";
 
@@ -11,11 +9,7 @@ export class App extends React.PureComponent {
     quotes: [],
     firstName: "Chuck",
     lastName: "Norris",
-    errorMessage: "",
     numQuote: 1,
-    isError: false,
-    isCharacterEnabled: false,
-    currentIndex: null
   };
 
   componentDidMount = () => {
@@ -25,7 +19,7 @@ export class App extends React.PureComponent {
 
   getRandomQuotes = (num, firstName, lastName) => {
     API.getRandomQuotes(num, firstName, lastName)
-      .then(res => this.setState({ quotes: res.data.value }))
+      .then(res => this.setState({ quotes: res.data.value, isError: false }))
       .catch(errors =>
         this.setState({
           errorMessage: errors.message || "Failed loading quotes",
@@ -34,18 +28,13 @@ export class App extends React.PureComponent {
       );
   };
 
-  handleChange = event => {
-    const { name, value } = event.target;
-    this.setState({
-      [name]: value
-    });
-  };
 
-  onSelect = event => {
-    const num = event.target.value;
-    const { firstName, lastName } = this.state;
-    this.setState({ numQuote: num });
-    this.getRandomQuotes(num, firstName, lastName);
+  showQuote = () => {
+    if (this.state.quotes.length > 0) {
+        return <ListOfQuotes 
+          quotes={this.state.quotes} 
+          onHover={this.onHover} />;
+    }
   };
 
   handleSubmit = event => {
@@ -55,47 +44,19 @@ export class App extends React.PureComponent {
     this.setState({ isCharacterEnabled: false });
   };
 
-  onHover = (index) => {
-    this.setState({ currentIndex: index });
-  };
+  displayErrorMessage = () => {
+    const { isError } = this.state;
 
-  showQuote = () => {
-    if (this.state.quotes.length > 0) {
-        return <ListOfQuotes 
-          quotes={this.state.quotes} 
-          onHover={this.onHover} 
-          currentIndex={this.state.currentIndex} />;
+    if (isError) {
+      return <p className="error">Error - {this.state.errorMessage || 'Not able to fetch quotes'}</p>
     }
   };
-
-  changeCharacterName = () => {
-    this.setState({ isCharacterEnabled: !this.state.isCharacterEnabled });
-  };
-
-  showCharacter = () => {
-    const { isCharacterEnabled } = this.state;
-
-    if (isCharacterEnabled) {
-      return (
-        <QuoteCharacter
-          handleChange={this.handleChange}
-          handleSubmit={this.handleSubmit}
-          firstName={this.state.firstName}
-          lastName={this.state.lastName}
-          changeCharacterName={this.changeCharacterName}
-        />
-      );
-    }
-    return <button onClick = {this.changeCharacterName}>Change character name</button>;
-  };
-
   render() {
     return (
       <div className="App">
+        {this.displayErrorMessage()}
         <div className="App_header">
-          <QuoteSelection onSelect={this.onSelect} />
           <button onClick = {this.handleSubmit}>Get new quote</button>
-          {this.showCharacter()}
         </div>
         <div className="App_content">{this.showQuote()}</div>
       </div>
